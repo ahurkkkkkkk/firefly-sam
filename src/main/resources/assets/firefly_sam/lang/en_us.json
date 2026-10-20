@@ -1,0 +1,17 @@
+{
+  "item.firefly_sam.firefly_blade": "Firefly Blade",
+  "key.categories.firefly_sam": "Firefly / SAM",
+  "key.firefly_sam.transform": "Toggle SAM mech",
+  "key.firefly_sam.ultimate": "Deathstar Overload (10-hit combo)",
+  "tooltip.firefly_sam.blade": "Fyrefly Type-IV \u00b7 Energy Blade",
+  "tooltip.firefly_sam.transform": "R toggles unlimited SAM mode \u00b7 Shift + right-click also toggles",
+  "tooltip.firefly_sam.combo": "SAM: 2x damage \u00b7 land 10 charged sword hits within 6s of each other",
+  "tooltip.firefly_sam.ultimate": "G / right-click: unleash Deathstar Overload when ready",
+  "tooltip.firefly_sam.terrain": "Ultimate destroys terrain in a 48-block-wide crater!",
+  "message.firefly_sam.hold_blade": "Equip the Firefly Blade in your main hand first.",
+  "message.firefly_sam.no_room": "SAM needs open space: at least 4 blocks of headroom.",
+  "message.firefly_sam.online": "SAM SYSTEM ONLINE \u00b7 Damage x2 \u00b7 Toggle off with R \u00b7 Build a 10-hit combo",
+  "message.firefly_sam.ready": "COMPLETE COMBUSTION READY \u00b7 Press your ultimate key!",
+  "message.firefly_sam.need_combo": "Land 10 charged sword hits in SAM to unlock the ultimate.",
+  "message.firefly_sam.target_unloaded": "Aim at nearby loaded ground."
+}
