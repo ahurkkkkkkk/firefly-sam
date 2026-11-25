@@ -90,7 +90,7 @@ public final class SamWalkCycle {
             data = cached;
             if (data != null) return data;
             try (var resource = Minecraft.getInstance().getResourceManager()
-                    .open(FireflySam.id("animations/sam_walk_cycle.json"));
+                    .open(FireflySam.id("walk_data/sam_walk_cycle.json"));
                  var reader = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8))) {
                 JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
                 if (root.get("format").getAsInt() != 1 || !CLIP.equals(root.get("clip").getAsString())) {

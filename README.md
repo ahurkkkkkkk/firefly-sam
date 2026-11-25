@@ -4,13 +4,22 @@ A fan-made Minecraft Java 1.21.1 NeoForge mod source project inspired by Firefly
 
 ## Public source release
 
-This repository publishes the mod's code and original project assets. It does **not** include a playable JAR or the supplied SAM and sword models, their derived mesh files, or the sword's imported textures. Those files were provided for local use, but the SAM model's redistribution terms were not provided and the downloaded sword archive did not contain a license file. They are excluded from this public release; see [CREDITS.md](CREDITS.md).
+This repository publishes the mod code and original project assets. It does **not** include a playable JAR, the supplied SAM and sword models, their derived meshes, textures, or Blockbench project. The supplied model readme permits modification but prohibits redistribution and commercial use. Those assets and their derivatives stay local; see [CREDITS.md](CREDITS.md).
 
-The code builds without those files, but the resulting JAR will not show the detailed SAM or sword models. A complete playable build requires replacement models and textures that you have the right to use, placed in the corresponding asset paths under `src/main/resources/assets/firefly_sam/`. No compiled binaries or model archives are published here.
+The source is designed around local copies of the supplied model assets, so a clean checkout builds the code but cannot render the detailed SAM and sword. The model ZIP is not stored or redistributed by this project. For a local build, extract the supplied files to `artifacts/sam-mmd-source` and install the Blender MMD Tools add-on. Place the Quaternius UAL1 Standard `.gltf`, `.bin`, and CC0 license in `artifacts/animations/quaternius-ual`. Then run:
+
+```powershell
+blender -b --python scripts/import_firefly_sword_pmx.py
+blender -b --python scripts/import_sam_pmx.py
+blender -b --python scripts/bake_walk_cycle.py
+python scripts/export_sam_blockbench.py
+```
+
+The SAM source mesh, generated GeckoLib geometry and animations, imported textures, walk keyframes, and editable Blockbench project stay ignored by Git. The test profile also needs GeckoLib 4.9.4 at runtime; Gradle resolves it from GeckoLib's Maven repository. Do not share a local model-bearing JAR or the converted files.
 
 ## Build and test
 
-Requirements: Java 21 and a network connection for the first Gradle dependency download. The project targets Minecraft Java 1.21.1 and NeoForge 21.1.209.
+Requirements: Java 21, NeoForge 21.1.209, GeckoLib 4.9.4, and a network connection for the first Gradle dependency download. The project targets Minecraft Java 1.21.1.
 
 On Windows PowerShell:
 
@@ -19,7 +28,7 @@ On Windows PowerShell:
 .\gradlew.bat build
 ```
 
-The JAR is written to `build/libs/`. Treat it as a code-only development build until you have added properly licensed model assets.
+The JAR is written to `build/libs/`. A build made with the local supplied assets is for local testing only and must not be redistributed.
 
 ## Controls and combat
 
@@ -31,6 +40,6 @@ The terrain strike edits blocks, so test it in a disposable world. Its range and
 
 ## License and attribution
 
-Original code is licensed under the MIT License in [LICENSE](LICENSE). The retargeted walk keyframes come from Quaternius's Universal Animation Library, released as CC0 1.0; see [CREDITS.md](CREDITS.md) for the reference and asset notes. The excluded SAM and sword assets are not covered by the code license.
+Original code is licensed under the MIT License in [LICENSE](LICENSE). The retargeted walk and sprint keyframes come from Quaternius's Universal Animation Library, released as CC0 1.0. The SAM specific attack and ultimate keyframes were created for this project. See [CREDITS.md](CREDITS.md) for references and asset notes. GeckoLib 4 provides the Blockbench animation runtime. The excluded SAM and sword assets and their derivatives are not covered by the code license.
 
 This is an unofficial fan project and is not affiliated with or endorsed by HoYoverse. Character names and designs belong to their respective owners.

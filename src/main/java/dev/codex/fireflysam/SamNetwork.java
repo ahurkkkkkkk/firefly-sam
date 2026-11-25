@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 public final class SamNetwork {
     private SamNetwork() {}
     public static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("1");
+        var registrar = event.registrar("2");
         registrar.playToServer(Action.TYPE, Action.CODEC, (packet, context) -> context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
                 if (packet.action == 0) SamCombat.toggle(player);
@@ -28,13 +28,14 @@ public final class SamNetwork {
         @Override public Type<Action> type() { return TYPE; }
     }
     public record State(int entityId, boolean active, int combo, long lastHit, long transformStart,
-                        long ultimateStart, Vec3 target) implements CustomPacketPayload {
+                        long ultimateStart, Vec3 target, long lastSwing, int swingStep) implements CustomPacketPayload {
         public static final Type<State> TYPE = new Type<>(FireflySam.id("state"));
         public static final StreamCodec<RegistryFriendlyByteBuf, State> CODEC = StreamCodec.of((b,p) -> {
             b.writeVarInt(p.entityId); b.writeBoolean(p.active); b.writeVarInt(p.combo);
             b.writeLong(p.lastHit); b.writeLong(p.transformStart); b.writeLong(p.ultimateStart);
             b.writeDouble(p.target.x); b.writeDouble(p.target.y); b.writeDouble(p.target.z);
-        }, b -> new State(b.readVarInt(), b.readBoolean(), b.readVarInt(), b.readLong(), b.readLong(), b.readLong(), new Vec3(b.readDouble(), b.readDouble(), b.readDouble())));
+            b.writeLong(p.lastSwing); b.writeByte(p.swingStep);
+        }, b -> new State(b.readVarInt(), b.readBoolean(), b.readVarInt(), b.readLong(), b.readLong(), b.readLong(), new Vec3(b.readDouble(), b.readDouble(), b.readDouble()), b.readLong(), b.readUnsignedByte()));
         @Override public Type<State> type() { return TYPE; }
     }
     public record Toughness(int entityId, float remaining, float maximum, long brokenUntil, long hitTick) implements CustomPacketPayload {

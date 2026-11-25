@@ -17,6 +17,14 @@ public final class FireflySword extends SwordItem {
         super(Tiers.NETHERITE, properties.attributes(SwordItem.createAttributes(Tiers.NETHERITE, 5, -2.4f)));
     }
     @Override
+    public boolean onEntitySwing(ItemStack stack, net.minecraft.world.entity.LivingEntity entity, InteractionHand hand) {
+        if (hand == InteractionHand.MAIN_HAND && entity instanceof net.minecraft.server.level.ServerPlayer player) {
+            SamCombat.bladeSwing(player);
+        }
+        return false;
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             if (player.isShiftKeyDown()) SamCombat.toggle(serverPlayer);

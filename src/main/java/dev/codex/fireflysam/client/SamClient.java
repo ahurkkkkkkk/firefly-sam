@@ -43,7 +43,7 @@ public final class SamClient {
                 @Override public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer(){if(renderer==null)renderer=new FireflyItemRenderer();return renderer;}
             },FireflySam.SWORD.get());
         }
-        @SubscribeEvent public static void reload(RegisterClientReloadListenersEvent e){e.registerReloadListener((ResourceManagerReloadListener)resources->SamMesh.clear());}
+        @SubscribeEvent public static void reload(RegisterClientReloadListenersEvent e){e.registerReloadListener((ResourceManagerReloadListener)resources->{SamMesh.clear();SamGeckoAnimation.clear();});}
     }
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post e){
@@ -93,7 +93,7 @@ public final class SamClient {
     public static void camera(ViewportEvent.ComputeCameraAngles e){
         var s=SamClientState.local();Minecraft mc=Minecraft.getInstance();
         if(mc.level==null)return;float now=mc.level.getGameTime()+(float)e.getPartialTick();
-        if(SamAutoTest.cameraAssist()&&s!=null&&s.active()&&s.ultimateStart()<0&&!mc.options.getCameraType().isFirstPerson()){e.setYaw(e.getYaw()+38);e.setPitch(-8);}
+        if(SamAutoTest.cameraAssist()&&s!=null&&s.active()&&s.ultimateStart()<0&&!mc.options.getCameraType().isFirstPerson()){e.setYaw(e.getYaw()+SamAutoTest.cameraYawOffset(mc));e.setPitch(-8);}
         if(s!=null&&s.ultimateStart()>=0){float age=now-s.ultimateStart();
             if(age<CombatRules.DIVE_START){
                 e.setPitch(-4);e.setYaw(e.getYaw()+Mth.sin(age*.022f)*5);

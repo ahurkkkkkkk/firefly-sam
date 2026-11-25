@@ -16,3 +16,6 @@ dist/
 *.rar
 src/main/resources/assets/firefly_sam/models/
 src/main/resources/assets/firefly_sam/textures/imported/
+src/main/resources/assets/firefly_sam/geo/
+src/main/resources/assets/firefly_sam/animations/sam_rig.animation.json
+src/main/resources/assets/firefly_sam/walk_data/

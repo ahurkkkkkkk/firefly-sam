@@ -104,12 +104,12 @@ public final class SamCommands {
             if(age==21&&!fireExtinguishReported){fireExtinguishReported=true;check("blade_holder_fire_extinguished",!tester.isOnFire());}
             long combatAge=age-combatStart;
             if(combatStart>=0&&combatAge==1)check("sam_remains_active_after_two_minutes",SamCombat.active(tester));
-            if(combatStart>=0&&combatAge>=35&&combatAge<=195&&(combatAge-35)%16==0){
+            if(combatStart>=0&&combatAge>=104&&combatAge<=264&&(combatAge-104)%16==0){
                 if(dummy==null||!dummy.isAlive())throw new IllegalStateException("Practice target died before combat validation");
                 float before=dummy.getHealth();tester.attack(dummy);tester.swing(net.minecraft.world.InteractionHand.MAIN_HAND);hits++;
                 if(hits==1){double expected=((Number)REPORT.get("normal_melee_damage")).doubleValue()*2;check("damage_doubled",Math.abs((before-dummy.getHealth())-expected)<.25);REPORT.put("melee_damage",before-dummy.getHealth());}
-                if(hits==9){check("nine_hits_no_ultimate",SamCombat.session(tester).combo.hits()==9);SamCombat.cast(tester);check("nine_hits_gate_enforced",!SamCombat.session(tester).combo.casting());}
-                if(hits==10){check("ten_hits_ready",SamCombat.session(tester).combo.ready());check("weakness_break_stuns",dummy.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN));}
+                if(hits==9){REPORT.put("combo_hits_at_test_hit_9",SamCombat.session(tester).combo.hits());check("nine_hits_no_ultimate",SamCombat.session(tester).combo.hits()==9);SamCombat.cast(tester);check("nine_hits_gate_enforced",!SamCombat.session(tester).combo.casting());}
+                if(hits==10){REPORT.put("combo_hits_at_test_hit_10",SamCombat.session(tester).combo.hits());check("ten_hits_ready",SamCombat.session(tester).combo.ready());check("weakness_break_stuns",dummy.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN));}
                 if(hits==11){double normal=tester.getAttributeValue(Attributes.ATTACK_DAMAGE)*2;check("super_break_bonus",before-dummy.getHealth()>normal+5);REPORT.put("super_break_hit_total",before-dummy.getHealth());}
             }
             if(castStart<0&&SamCombat.session(tester).combo.casting()){

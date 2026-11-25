@@ -64,6 +64,8 @@ public final class SamCombat {
         public final CombatRules.Combo combo = new CombatRules.Combo();
         final Set<UUID> brokenTargetsAtCast = new HashSet<>();
         public boolean active;
+        public long lastSwing = -100;
+        public int swingStep;
         public long transformStart = -1, ultimateStart = -1, lastAction = -100;
         long candidateTick = -1;
         int candidateId = -1;
@@ -102,6 +104,7 @@ public final class SamCombat {
         AABB tall = new AABB(box.minX - .23, box.minY, box.minZ - .23, box.maxX + .23, box.minY + 3.25, box.maxZ + .23);
         if (!player.level().noCollision(player, tall)) { tell(player, "message.firefly_sam.no_room"); return; }
         if (player.isPassenger()) player.stopRiding();
+        s.lastSwing = -100; s.swingStep = 0;
         s.active = true; s.dimension = player.level().dimension(); s.transformStart = now; s.combo.reset();
         modifier(player, Attributes.SCALE, "mech_scale", .75, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, true);
         modifier(player, Attributes.ARMOR, "mech_armor", 8, AttributeModifier.Operation.ADD_VALUE, true);
@@ -134,8 +137,17 @@ public final class SamCombat {
     }
     private static void tell(ServerPlayer p, String key) { p.displayClientMessage(Component.translatable(key).withStyle(ChatFormatting.AQUA), true); }
     public static SamNetwork.State snapshot(Player p, Session s) {
-        return new SamNetwork.State(p.getId(), s.active, s.combo.hits(), s.combo.lastHit(), s.transformStart, s.ultimateStart, s.target);
+        return new SamNetwork.State(p.getId(), s.active, s.combo.hits(), s.combo.lastHit(), s.transformStart, s.ultimateStart, s.target, s.lastSwing, s.swingStep);
     }
+    static void bladeSwing(ServerPlayer player) {
+        Session session = session(player);
+        long now = player.level().getGameTime();
+        if (!session.active || session.ultimateStart >= 0 || now == session.lastSwing) return;
+        session.swingStep = now - session.lastSwing > 24 ? 0 : (session.swingStep + 1) % 3;
+        session.lastSwing = now;
+        sync(player, session);
+    }
+
     public static void sync(ServerPlayer p, Session s) { PacketDistributor.sendToPlayersTrackingEntityAndSelf(p, snapshot(p,s)); }
 
     @SubscribeEvent
@@ -170,6 +182,9 @@ public final class SamCombat {
         if (s.combo.casting()) return;
         boolean primary = s.candidateTick == now && s.candidateId == target.getId();
         boolean charged = primary && s.candidateCharged;
+        if (Boolean.getBoolean("fireflysam.test")) FireflySam.LOGGER.log(System.Logger.Level.INFO,
+                "SAM_TEST_HIT_RESULT tick={0} primary={1} charged={2} active={3} combo={4}",
+                now, primary, charged, s.active, s.combo.hits());
         if (s.combo.hit(now, s.active, charged, primary)) {
             s.candidateId = -1;
             if (s.combo.ready()) {
