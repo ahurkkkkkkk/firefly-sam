@@ -125,6 +125,7 @@ public final class SamCommands {
                 for(var direction:net.minecraft.core.Direction.values())tester.serverLevel().setBlock(sentinelWater.relative(direction),Blocks.BEDROCK.defaultBlockState(),2);
                 var target=SamCombat.session(tester).target;
                 burnDummy=spawnDummy(tester.serverLevel(),target.x+2,target.y,target.z,1000,"SAM invisible-burn trial");
+                burnDummy.getAttribute(Attributes.ARMOR).setBaseValue(20);
             }
             long castAge=castStart<0?-1:age-castStart;
             if(castAge==CombatRules.IMPACT_TICK-1&&!brokenWindowExpiryReported){
@@ -135,6 +136,7 @@ public final class SamCommands {
             }
             if(castAge==CombatRules.IMPACT_TICK+1&&!burnAppliedReported){
                 burnAppliedReported=true;burnHealthAtImpact=burnDummy.getHealth();
+                REPORT.put("armored_target_health_lost_at_impact",1000-burnHealthAtImpact);
                 if(!brokenUltimateReported){
                     brokenUltimateReported=true;
                     long now=tester.level().getGameTime();

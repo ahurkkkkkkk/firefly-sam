@@ -191,13 +191,35 @@ def main():
     clips["backpedal"] = {"length": walk_duration, "loop": True, "frames": merge_cycle(WALK_PATH, mirror=True, shift=.5, lean=-.08)[1]}
     clips["strafe_left"] = {"length": walk_duration, "loop": True, "frames": merge_cycle(WALK_PATH, mirror=True, shift=.25, lean=.05)[1]}
     clips["strafe_right"] = {"length": walk_duration, "loop": True, "frames": merge_cycle(WALK_PATH, shift=.25, lean=.05)[1]}
-    for label, direction in (("strafe_left", -1), ("strafe_right", 1)):
-        for _, frame in clips[label]["frames"][:-1]:
-            for side in ("right", "left"):
-                leg = frame[side + "_leg"]
-                leg[2] += direction * leg[0]
-                leg[0] *= .25
-        clips[label]["frames"][-1] = (walk_duration, {k: v[:] for k, v in clips[label]["frames"][0][1].items()})
+    # Solve the ankle path in SAM's proportions. During support the foot
+    # travels backward at ground speed. The return arc lifts only the free foot.
+    for name in ("walk", "backpedal", "strafe_left", "strafe_right", "sprint"):
+        clip = clips[name]
+        half_step = .49 if name == "sprint" else .36
+        thigh, shin = .843, .938
+        for time, frame in clip["frames"]:
+            for side, offset in (("right", 0), ("left", .5)):
+                phase = (time / clip["length"] + offset) % 1
+                if phase < .5:
+                    travel = half_step * (1 - 4 * phase)
+                    lift = 0
+                else:
+                    t = 2 * phase - 1
+                    travel = half_step * (-1 - 2*t + 12*t*t - 8*t*t*t)
+                    lift = (.115 if name == "sprint" else .075) * math.sin(math.pi*t)**2
+                drop = thigh + shin - .09 - lift
+                lateral = name.startswith("strafe")
+                fore = 0 if lateral else travel * (-1 if name == "backpedal" else 1)
+                roll = math.atan2(travel, drop) * (1 if name == "strafe_left" else -1) if lateral else 0
+                vertical = math.hypot(drop, travel) if lateral else drop
+                cosine = (fore*fore + vertical*vertical - thigh*thigh - shin*shin)/(2*thigh*shin)
+                knee = -math.acos(max(-1, min(1, cosine)))
+                hip = math.atan2(fore, vertical) - math.atan2(shin*math.sin(knee), thigh+shin*math.cos(knee))
+                frame[side+"_leg"] = [-hip, 0, roll]
+                frame[side+"_shin"] = [-knee, 0, 0]
+                frame[side+"_foot"] = [hip+knee, 0, -roll]
+            frame["hips"] = [0, 0, 0]
+            frame["torso"] = [0, .035*math.sin(2*math.pi*time/clip["length"]), 0]
     clips.update(original_attacks())
     clips.update(ultimate_clip())
     # The PMX sword's blade runs from its palm grip along local +Y.  Its SAM

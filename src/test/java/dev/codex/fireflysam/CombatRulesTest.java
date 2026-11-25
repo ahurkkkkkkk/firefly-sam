@@ -27,8 +27,8 @@ public final class CombatRulesTest {
         check(CombatRules.toughness(1000000,200)<=240,"boss toughness bounded");
         check(CombatRules.breakDamage(100,150)>CombatRules.breakDamage(100,0),"Break Effect improves break burst");
         check(CombatRules.superBreakDamage(24,150)>CombatRules.superBreakDamage(16,150),"SAM break efficiency increases super break");
-        check(CombatRules.ultimateDamage(70,10,false)==140,"ultimate keeps its doubled base damage against unbroken enemies");
-        check(CombatRules.ultimateDamage(70,10,true)==1400,"ultimate deals ten times its base hit against weakness-broken enemies");
+        check(CombatRules.ultimateDamage(70,10,false)==560,"ultimate keeps its doubled base damage against unbroken enemies");
+        check(CombatRules.ultimateDamage(70,10,true)==5600,"ultimate deals ten times its base hit against weakness-broken enemies");
         check(CombatRules.craterFloor(0,24,10)==-10,"center has configured crater depth");
         check(CombatRules.craterFloor(24,24,10)==0&&CombatRules.craterFloor(25,24,10)==0,"crater does not extend beyond boundary");
         check(CombatRules.craterFloor(12,24,10)>-10&&CombatRules.craterFloor(12,24,10)<0,"crater slopes toward edge");

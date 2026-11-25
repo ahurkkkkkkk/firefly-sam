@@ -51,7 +51,7 @@ public final class CombatRules {
         return (float) (reduction * 0.6 * (1 + breakEffectPercent / 100));
     }
     public static float ultimateDamage(double baseDamage, double brokenMultiplier, boolean weaknessBroken) {
-        return (float) (baseDamage * 2 * (weaknessBroken ? brokenMultiplier : 1));
+        return (float) (baseDamage * 2 * 4 * (weaknessBroken ? brokenMultiplier : 1));
     }
     public static double craterFloor(double distance, double radius, double depth) {
         double t = distance / radius;

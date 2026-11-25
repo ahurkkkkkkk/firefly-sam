@@ -66,6 +66,7 @@ public final class SamGeckoAnimation {
             pose.put(bone.getName(), new Vector3f(bone.getRotX(), bone.getRotY(), bone.getRotZ()));
         }
         for (String bone : BONES) pose.putIfAbsent(bone, new Vector3f());
+        if (distanceClock) pose.put("__offset_hips", new Vector3f(0, -.09f * SamAnimation.walkAmount(player, partial), 0));
         return pose;
     }
 
@@ -101,9 +102,18 @@ public final class SamGeckoAnimation {
         return player.isSprinting() ? "sprint" : "walk";
     }
 
+    private static final Map<Player, Travel> TRAVEL = new java.util.WeakHashMap<>();
+    private static final class Travel { Vec3 position; double cycles; }
+
     private static double cycleTicks(Player player, float partial, boolean sprint) {
-        float stride = SamAnimation.walkStride(player, partial);
-        float cycles = stride / ((float)Math.PI * 2);
+        Vec3 position = player.getPosition(partial);
+        Travel travel = TRAVEL.computeIfAbsent(player, ignored -> new Travel());
+        if (travel.position != null) {
+            double distance = Math.hypot(position.x - travel.position.x, position.z - travel.position.z);
+            if (distance < 1) travel.cycles += distance / (sprint ? 1.96 : 1.44);
+        }
+        travel.position = position;
+        double cycles = travel.cycles;
         return cycles * (sprint ? SPRINT_CYCLE_TICKS : WALK_CYCLE_TICKS);
     }
 

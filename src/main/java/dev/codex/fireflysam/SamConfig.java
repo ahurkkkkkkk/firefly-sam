@@ -18,7 +18,7 @@ public final class SamConfig {
         CRATER_RADIUS = b.defineInRange("craterRadius", 24, 6, 48);
         CRATER_DEPTH = b.defineInRange("craterDepth", 10, 2, 24);
         BLOCKS_PER_TICK = b.defineInRange("blocksPerTick", 768, 64, 2048);
-        ULTIMATE_DAMAGE = b.comment("Base damage before SAM's 2x multiplier.").defineInRange("baseDamage", 70.0, 1.0, 1000.0);
+        ULTIMATE_DAMAGE = b.comment("Base damage before SAM's 2x multiplier and the ultimate's 4x impact multiplier.").defineInRange("baseDamage", 70.0, 1.0, 1000.0);
         ULTIMATE_BROKEN_MULTIPLIER = b.comment("Extra multiplier when the ultimate hits a weakness-broken target; broken enemies at cast time stay eligible through the dive.").defineInRange("brokenDamageMultiplier", 10.0, 1.0, 100.0);
         b.pop().push("break");
         BREAK_EFFECT = b.comment("Bonus Break Effect, in percent.").defineInRange("breakEffectPercent", 150.0, 0.0, 1000.0);
