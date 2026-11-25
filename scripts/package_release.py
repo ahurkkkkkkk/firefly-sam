@@ -4,7 +4,7 @@ import hashlib
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 DIST = ROOT / "dist"
 OUTPUT = DIST / f"Firefly-SAM-{VERSION}-source.zip"
 ROOT_FILES = (

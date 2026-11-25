@@ -78,6 +78,11 @@ public final class SamClient {
         boolean right=(mc.player.getMainArm()==HumanoidArm.RIGHT)==main;
         var motion=SamAnimation.swingPose(mc.player,e.getHand(),.5f);
         float load=motion.windup(),strike=motion.strike(),follow=motion.followThrough();float side=right?-1:1;
+        if (mc.player.isSprinting() && (mc.level.getGameTime()-s.lastSwing() >= 12) && s.ultimateStart()<0) {
+            float swing = Mth.cos(mc.player.walkAnimation.position(e.getPartialTick()) * .80f) * (right ? 1 : -1);
+            p.translate(side * -.025f, -.07f + .016f*swing, .07f + .035f*swing);
+            p.mulPose(Axis.XP.rotationDegrees(-6 + 2.5f*swing));
+        }
         p.translate((right?.63:-.63)+side*.03f*strike,
             -1.08f-.02f*load+.06f*strike-.01f*follow,
             -.98f+.07f*load-.22f*strike+.10f*follow);

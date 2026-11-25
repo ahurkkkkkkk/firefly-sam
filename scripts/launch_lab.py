@@ -25,7 +25,7 @@ lab=Path(args.game_dir)
 if not lab.is_absolute():lab=root/lab
 lab=lab.resolve()
 for folder in ('mods','natives','screenshots','saves'):(lab/folder).mkdir(parents=True,exist_ok=True)
-jar=root/'build/libs/firefly-sam-2.0.1.jar'
+jar=root/'build/libs/firefly-sam-2.0.2.jar'
 for old in (lab/'mods').glob('firefly-sam-*.jar'):
     assert old.resolve().parent==(lab/'mods').resolve()
     if old.name!=jar.name:old.replace(old.with_suffix('.jar.disabled'))

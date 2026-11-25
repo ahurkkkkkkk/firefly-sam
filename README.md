@@ -40,6 +40,6 @@ The terrain strike edits blocks, so test it in a disposable world. Its range and
 
 ## License and attribution
 
-Original code is licensed under the MIT License in [LICENSE](LICENSE). The retargeted walk and sprint keyframes come from Quaternius's Universal Animation Library, released as CC0 1.0. The SAM specific attack and ultimate keyframes were created for this project. See [CREDITS.md](CREDITS.md) for references and asset notes. GeckoLib 4 provides the Blockbench animation runtime. The excluded SAM and sword assets and their derivatives are not covered by the code license.
+Original code is licensed under the MIT License in [LICENSE](LICENSE). The walk source keyframes come from Quaternius's Universal Animation Library, released as CC0 1.0. The SAM sprint, attack and ultimate keyframes were created for this project. See [CREDITS.md](CREDITS.md) for references and asset notes. GeckoLib 4 provides the Blockbench animation runtime. The excluded SAM and sword assets and their derivatives are not covered by the code license.
 
 This is an unofficial fan project and is not affiliated with or endorsed by HoYoverse. Character names and designs belong to their respective owners.

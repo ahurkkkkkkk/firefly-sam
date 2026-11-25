@@ -63,15 +63,16 @@ final class SamAutoTest {
             else if(age>=96&&age<104)mc.player.setDeltaMovement(0,mc.player.getDeltaMovement().y,-.08);
             else if(age>=104&&age<112)mc.player.setDeltaMovement(-.08,mc.player.getDeltaMovement().y,0);
             else if(age>=112&&age<120)mc.player.setDeltaMovement(.08,mc.player.getDeltaMovement().y,0);
-            else if(age>=120&&age<128)mc.player.setDeltaMovement(0,mc.player.getDeltaMovement().y,.16);
-            else if(age>=128&&age<159)mc.player.setDeltaMovement(0,mc.player.getDeltaMovement().y,0);
-            mc.player.setSprinting(age>=120&&age<128);
+            else if(age>=120&&age<146)mc.player.setDeltaMovement(0,mc.player.getDeltaMovement().y,.16);
+            else if(age>=146&&age<159)mc.player.setDeltaMovement(0,mc.player.getDeltaMovement().y,0);
+            mc.player.setSprinting(age>=120&&age<146);
             if(age==77)shot(mc,"02a-sam-walking-stance");
             if(age==82){shot(mc,"02-sam-walking-animation");walkingPoseReport(mc);locomotionReport(mc,"walk",82);}
             if(age==93){shot(mc,"02b-sam-walk-stop");locomotionReport(mc,"stop",93);}
             if(age==100){shot(mc,"02c-sam-backpedal");locomotionReport(mc,"backpedal",100);}
             if(age==108){shot(mc,"02d-sam-strafe-left");locomotionReport(mc,"strafe_left",108);}
             if(age==116){shot(mc,"02e-sam-strafe-right");locomotionReport(mc,"strafe_right",116);}
+            if(age>=122 && age<144) shot(mc,"sprint-review-"+age);
             if(age==124){shot(mc,"02f-sam-sprint");locomotionReport(mc,"sprint",124);}
             if(age==150){shot(mc,"02g-sam-forward-pointing-swords");locomotionReport(mc,"ready",150);}
             if(age>72)shot(mc,"01-sam-transformation");

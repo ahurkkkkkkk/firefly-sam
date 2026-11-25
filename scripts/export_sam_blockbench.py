@@ -13,7 +13,6 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSET_ROOT = ROOT / "src/main/resources/assets/firefly_sam"
 RIG_PATH = ASSET_ROOT / "models/sam_rig.fmesh"
 WALK_PATH = ASSET_ROOT / "walk_data/sam_walk_cycle.json"
-SPRINT_PATH = ROOT / "artifacts/animations/quaternius-ual/sam_sprint_cycle.json"
 GEO_PATH = ASSET_ROOT / "geo/sam_rig.geo.json"
 ANIM_PATH = ASSET_ROOT / "animations/sam_rig.animation.json"
 BBMODEL_PATH = ROOT / "artifacts/Blockbench/SAM_rig.bbmodel"
@@ -185,17 +184,15 @@ def main():
     walk_duration, walk_frames = merge_cycle(WALK_PATH)
     clips = {"idle": {"length": 1.0, "loop": True, "frames": [(0.0, base_pose()), (1.0, base_pose())]},
              "walk": {"length": walk_duration, "loop": True, "frames": walk_frames}}
-    if SPRINT_PATH.exists():
-        sprint_duration, sprint_frames = merge_cycle(SPRINT_PATH)
-        clips["sprint"] = {"length": sprint_duration, "loop": True, "frames": sprint_frames}
+    clips["sprint"] = {"length": .6666667, "loop": True, "frames": []}
     clips["backpedal"] = {"length": walk_duration, "loop": True, "frames": merge_cycle(WALK_PATH, mirror=True, shift=.5, lean=-.08)[1]}
     clips["strafe_left"] = {"length": walk_duration, "loop": True, "frames": merge_cycle(WALK_PATH, mirror=True, shift=.25, lean=.05)[1]}
     clips["strafe_right"] = {"length": walk_duration, "loop": True, "frames": merge_cycle(WALK_PATH, shift=.25, lean=.05)[1]}
     # Solve the ankle path in SAM's proportions. During support the foot
     # travels backward at ground speed. The return arc lifts only the free foot.
-    for name in ("walk", "backpedal", "strafe_left", "strafe_right", "sprint"):
+    for name in ("walk", "backpedal", "strafe_left", "strafe_right"):
         clip = clips[name]
-        half_step = .49 if name == "sprint" else .36
+        half_step = .36
         thigh, shin = .843, .938
         for time, frame in clip["frames"]:
             for side, offset in (("right", 0), ("left", .5)):
@@ -206,7 +203,7 @@ def main():
                 else:
                     t = 2 * phase - 1
                     travel = half_step * (-1 - 2*t + 12*t*t - 8*t*t*t)
-                    lift = (.115 if name == "sprint" else .075) * math.sin(math.pi*t)**2
+                    lift = .075 * math.sin(math.pi*t)**2
                 drop = thigh + shin - .09 - lift
                 lateral = name.startswith("strafe")
                 fore = 0 if lateral else travel * (-1 if name == "backpedal" else 1)
@@ -220,6 +217,40 @@ def main():
                 frame[side+"_foot"] = [hip+knee, 0, -roll]
             frame["hips"] = [0, 0, 0]
             frame["torso"] = [0, .035*math.sin(2*math.pi*time/clip["length"]), 0]
+    # A running step has a shorter support phase, then toe-off, folded
+    # recovery and extension. Angles are in the imported SAM joint axes.
+    run = clips["sprint"]
+    run_keys = [(0, 25, -26, 0), (.15, 13, -38, 0), (.37, -19, -15, -14),
+                (.48, -24, -47, -25), (.64, 1, -73, -20), (.80, 32, -58, -6),
+                (.92, 36, -34, 3), (1, 25, -26, 0)]
+    def run_leg(phase):
+        for a, b in zip(run_keys, run_keys[1:]):
+            if phase <= b[0]:
+                t = (phase-a[0])/(b[0]-a[0])
+                t = t*t*(3-2*t)
+                return [math.radians(x+(y-x)*t) for x,y in zip(a[1:], b[1:])]
+    frames = []
+    for sample in range(41):
+        phase = sample/40
+        frame = base_pose()
+        beat = math.cos(phase*math.tau)
+        frame["torso"] = [.15, .065*beat, 0]
+        frame["head"] = [-.10, -.035*beat, 0]
+        for side, offset, sign in (("right", 0, 1), ("left", .5, -1)):
+            hip, knee, toe = run_leg((phase+offset)%1)
+            frame[side+"_leg"] = [-hip, 0, 0]
+            frame[side+"_shin"] = [-knee, 0, 0]
+            frame[side+"_foot"] = [hip+knee-toe, 0, 0]
+            # Shoulders counter the legs. Bent elbows carry the momentum,
+            # while the wrist compensates to keep the hilt steady.
+            swing = sign * beat
+            shoulder = .19 + .24*swing
+            elbow = -.67 - .11*swing
+            frame[side+"_arm"] = [shoulder, .06*sign, .63*sign]
+            frame[side+"_forearm"] = [elbow, 0, .13*sign]
+            frame[side+"_hand"] = [-.27-.70*(shoulder+elbow), 0, .04*sign]
+        frames.append((phase*run["length"], frame))
+    run["frames"] = frames
     clips.update(original_attacks())
     clips.update(ultimate_clip())
     # The PMX sword's blade runs from its palm grip along local +Y.  Its SAM
@@ -321,7 +352,7 @@ def main():
     BBMODEL_PATH.write_text(json.dumps(bbmodel,separators=(",",":")) + "\n", encoding="utf-8")
     print(json.dumps({"model": str(GEO_PATH), "animations": str(ANIM_PATH), "blockbench_source": str(BBMODEL_PATH),
                       "bones": len(bones), "clips": list(clips), "walk_clip_source": "Quaternius UAL1 Walk_Loop (CC0)",
-                      "sprint_clip_source": "Quaternius UAL1 Sprint_Loop (CC0)" if SPRINT_PATH.exists() else "not baked"}, indent=2))
+                      "sprint_clip_source": "Original SAM twin-sword run"}, indent=2))
 
 if __name__ == "__main__":
     main()
